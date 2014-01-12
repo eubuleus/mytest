@@ -1,68 +1,97 @@
+// test.cpp : 定义控制台应用程序的入口点。
+//
+
+#include "stdafx.h"
 #include <iostream>
-#include <list>
-using namespace std;
 
-class Point {
-    public:
-    Point();
-    Point(int xp, int yp) { x = xp; y = yp;}
-    ~Point() {}
-    int print_x() const { return x; }
-    int print_y() const { return y; }
-    private:
-    int x, y;
-};
-
-int main (int argc, char **argv)
+int _tmain(int argc, _TCHAR* argv[])
 {
-    cout << "main : -----------------  \n" << endl;
-    Point p1(1,1);
-    Point p2(2,2);
-    Point p3(3,3);
+	int i1,i2;
+	std::cin>>i1>>i2;
+	std::cout<<"-----"<<i1<<"============"<<i2<<std::endl;
+	std::string str;
 
-    list<Point *> mylist;
-    list<Point *>::const_iterator lp;
+//------------------->>>>>>>>>>>>>>>>>>>
 
-    mylist.push_back(&p1);
-    mylist.push_back(&p2);
-    mylist.push_back(&p3);
+    use Mod_Common,    only: OUT, E_cut, E_surf0, dE
+    use Mod_Vector    ,only: Init_Mod_Vector
+    use Mod_Vector_Waterflow    ,only: Init_Mod_Vector_Waterflow
+    use Mod_Grid    ,only: Init_Mod_Grid
+//! ______________________________________________________________________
 
-    for(lp = mylist.begin(); lp != mylist.end(); lp++) {
-        cout << "item: " << (*lp)->print_x() << ", " << (*lp)->print_y()
-<<  endl;
-    }
+    float d_lrzcs(5), lrzcs_0(5)
+    int  n_lrzcs(5)
+    NameList /Grid/ d_lrzcs, n_lrzcs, lrzcs_0
+    NameList /INPUT2/ E_cut, E_surf0, dE
 
-    while(!mylist.empty())
-    {
-        Point *a = mylist.front();
-        mylist.pop_front();
-        delete a;
-    }
+    int IChoice_Search = 2;
 
-    for(lp = mylist.begin(); lp != mylist.end(); lp++) {
-        cout << "item: " << (*lp)->print_x() << ", " << (*lp)->print_y()
-<<  endl;
-    }
+    //! - dimensions -
+    open(1,file='input.dat') 
+    read(1,NML=Grid);    rewind(1)
+    read(1,NML=INPUT2)
+    close(1)
 
-    cout << "Done." << endl;
+    open(1,file='SHellCor.txt')
 
-    return 0;
+	//! - only plot -
+	if(IChoice_Search == 5) {
+        projection(1,n_lrzcs)
+		close(1)
+		stop
+	}
+	if( IChoice_Search == 6) {
+        projection2(1,n_lrzcs)
+		close(1)
+		stop
+	}
+    //! - Construct the grid -
+    init_Mod_Grid  (1,lrzcs_0, d_lrzcs, n_lrzcs);
+    close(1);
+
+    //! - auxiliary vectors and operations -
+    open(OUT,file='OUT.txt');
+    call Init_Mod_Vector(n_lrzcs);
+
+//    Well let's search for channels
+
+
+switch(iChoice_Search) {
+		case 1:
+            init_Mod_Vector_WaterFlow(n_lrzcs)
+            search_Prepare
+            search
+
+		case 2:
+            Init_Mod_Vector_WaterFlow(n_lrzcs)
+            Search_Prepare1()
+            Search_2Barrier()
+		case 3:
+            Search_Slice()
+		case 4:
+            call Search2       // ! moller
+		default:
+            stop 'Error: main!'
+	}
+
+    stop 'OK, well done!!'
+
+
+
+//-------------------<<<<<<<<<<<<<<<<<<<
+	return 0;
 }
 
-main2()
+class Grid {
+public:
+	Grid* getNext(){return NULL;};
+	int get_i() const;
+private:
+	int i;
+};
+
+int Grid::get_i() const
 {
-   list<int> L;
-   L.push_back(0);              // Insert a new element at the end
-   L.push_front(0);             // Insert a new element at the beginning
-   L.insert(++L.begin(),2);     // Insert "2" before position of first argument
-                                // (Place before second argument)
-   L.push_back(5);
-   L.push_back(6);
- 
-   list<int>::iterator i;
- 
-   for(i=L.begin(); i != L.end(); ++i) cout << *i << " ";
-   cout << endl;
-   return 0;
+	return 7;
 }
 
