@@ -48,12 +48,12 @@ void projection(int IU, int n_lrzcs) {
 			i_d3=0
 		}
 		if(Edef < E(i_d1,i_d2,i_d3)) {				//! Edef < of E(3,6)
-			E(i_d1,i_d2,i_d3) = Edef;
-			l(i_d1,i_d2,i_d3) = shape_para(1);
-			r(i_d1,i_d2,i_d3) = shape_para(2);
-			z(i_d1,i_d2,i_d3) = shape_para(3);
-			c(i_d1,i_d2,i_d3) = shape_para(4);
-			s(i_d1,i_d2,i_d3) = shape_para(5);
+			E[i_d1,i_d2,i_d3] = Edef;
+			l[i_d1,i_d2,i_d3] = shape_para[1];
+			r[i_d1,i_d2,i_d3] = shape_para[2];
+			z[i_d1,i_d2,i_d3] = shape_para[3];
+			c[i_d1,i_d2,i_d3] = shape_para[4];
+			s[i_d1,i_d2,i_d3] = shape_para[5];
 		}
 	}
 
@@ -144,6 +144,5 @@ void projection(int IU, int n_lrzcs) {
 		}
 
 	}
-// ######################################################################
 
 }

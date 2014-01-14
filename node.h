@@ -15,7 +15,7 @@ class Node{
    //     ! - for waterflow only -
 
     int  BasinId;
-    int vd_Ix;               // ! water flow direction. 
+    int vd_ix;               // ! water flow direction. 
     int n_CB;           //! number of connected Basins by looking down
     int* CB[] = NULL;            //! connected basins. CB(0:n) - CB(0) is the basin it belongs to; CB(1:n) are other connected basins
     int* ix_CB[] = NULL;           //! connected node belonging to a certain adjacent Basin
@@ -37,3 +37,14 @@ Node::Node()
     isCol = false;
     BasinId = 0;
 }
+
+
+/*
+int len;
+cin>>len;
+//用指针p指向new动态分配的长度为len*sizeof(int)的内存空间
+int *p = new int[len];
+...........
+delete[]p;
+return0;
+*/
