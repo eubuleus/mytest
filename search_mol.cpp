@@ -1,6 +1,6 @@
-#include "Grid.h"              //     use Mod_Grid,        only: num_nodes, n_lrzcs, Nodes, GetIlrzcsFromIx, GetShapeFromIx
-#include "Vector.h"            //    use Mod_Vector,        only: Dir,num_dir_len,num_dir
-#include "Common.h"            //    use Mod_Common,        only: E_cut, n_Minima_MAX, n_minima, ix_Minima, NodeType, E_surf0, dE
+#include "grid.h"              //     use Mod_Grid,        only: num_nodes, n_lrzcs, Nodes, GetIlrzcsFromIx, GetShapeFromIx
+#include "vector.h"            //    use Mod_Vector,        only: Dir,num_dir_len,num_dir
+#include "common.h"            //    use Mod_Common,        only: E_cut, n_Minima_MAX, n_minima, ix_Minima, NodeType, E_surf0, dE
 
 class SearchMol{
     int list_OnSurf [][],list_ToVisit[][],list_Visitin[][];
@@ -83,12 +83,14 @@ class SearchMol{
         int i_min, ix;
         cout << "Minima under surface:" <<endl;
         for (int i = 0; i++: i<2) {
-            write(*,'(a,i4,a,\)') 'Pool',i,' :'
+            cout << "Pool" << setw(4) << i << ":";
             for (i_min = 1; i<n_minima; i++){
                 ix = ix_Minima(i_min)
-                if( nodes[ix].wet_tag.b_Wet(i)) write(*,'(i4,\)') i_min
+                if( nodes[ix].wet_tag.b_Wet(i)) {
+                    cout << setw(4)  << i_min;
+                }
             }	
-        write(*,*)
+            cout << endl;
         }
     }
 }
