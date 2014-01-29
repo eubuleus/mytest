@@ -10,12 +10,12 @@ void IdentifyMin(int ix, int b_min) {
 //    integer,intent(out):: b_min
 
     float E0, E;
-    int i,vec[5],vd,ind[5,2],ind1[5,2];
+    int i,vec[5],vd,ind[5],[2],ind1[5],[2];
 
-    ind= Nodes[Ix].Ind;
-    E0 = Nodes[Ix].E;
+    ind= Nodes[ix].Ind;
+    E0 = Nodes[ix].E;
     b_min = true;
-    for (int i = 0; i < num_dir_len(max_len);i++){
+    for (int i = 0; i < num_dir_len[max_len]; i++){
 
         vec(:) = Dir(:,i);
         E = GetNeighValue(ind,vec);
