@@ -14,8 +14,8 @@ class Node{
 
    //     ! - for waterflow only -
 
-    int  BasinId;
-    int vd_Ix;               // ! water flow direction. 
+    int  basin_id;
+    int vd_ix;               // ! water flow direction. 
     int n_CB;           //! number of connected Basins by looking down
     int* CB[] = NULL;            //! connected basins. CB(0:n) - CB(0) is the basin it belongs to; CB(1:n) are other connected basins
     int* ix_CB[] = NULL;           //! connected node belonging to a certain adjacent Basin
