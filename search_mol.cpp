@@ -3,48 +3,48 @@
 #include "common.h"            //    use Mod_Common,        only: E_cut, n_Minima_MAX, n_minima, ix_Minima, NodeType, E_surf0, dE
 
 class SearchMol{
-    int list_OnSurf [][],list_ToVisit[][],list_Visitin[][];
-    int n_Wet[2], n_OnSurf[2] , n_ToVisit[2] , n_Visitin[2];
+    int list_on_surface [][],list_to_visit[][],list_visiting[][];
+    int num_wet[2], num_on_surface[2] , num_to_visit[2] , num_visiting[2];
 
-    void initAlgorithm(){
+    void InitAlgorithm(){
 
-        list_OnSurf = new int[num_nodes][2];
-        list_ToVisit = new int[num_nodes][2];
-        list_Visitin = new int[num_nodes][2];
-        n_OnSurf(:) = 0;
-        n_ToVisit(:)= 0;
-        n_Visitin(:)= 0;
-        n_Wet(:) = 0
+        list_on_surface = new int[num_nodes][2];
+        list_to_visit = new int[num_nodes][2];
+        list_visiting = new int[num_nodes][2];
+        num_on_surface(:) = 0;
+        num_to_visit(:)= 0;
+        num_visiting(:)= 0;
+        num_wet(:) = 0
     }
 
-    void setStartin(int i, int ix){
-        setWet(i,ix);
-        setOnSurf(i,ix);
+    void SetStartin(int i, int ix){
+        SetWet(i,ix);
+        SetOnSurf(i,ix);
     }
 
-    float initWater(int ix1, int ix2){
-        initWater = max(nodes[ix1].E, nodes[ix2].E, E_surf0)
-        if(initWater>E_cut) {
-            stop 'Error: max(nodes[ix1].E, nodes[ix2].E, E_surf0)> E_cut'
+    float InitWater(int ix1, int ix2){
+        float e = max(nodes[ix1].E, nodes[ix2].E, E_surf0);
+        if(e>E_cut) {
+            stop 'Error: max(nodes[ix1].E, nodes[ix2].E, E_surf0)> E_cut';
         }
+        return e;
     }
 
-    void raiseWater(E_surf)
-        real,intent(out):: E_surf
-        E_surf = E_surf+dE
+    void RaiseWater(float& E_surf)
+        E_surf += dE
         if(E_surf>E_cut){
             stop 'Error: Barrier>Ecut. Please increase E_cut'
         }
     }
 
-    void useToVisit(int i){              //  i = 1 or 2
-        list_Visitin(1:n_ToVisit(i),i) = list_ToVisit(1:n_ToVisit(i),i)
-        n_Visitin[i]++;
-        n_ToVisit[i] = 0;
+    void UseToVisit(int i){              //  i = 1 or 2
+        list_visiting(1:num_to_visit(i),i) = list_to_visit(1:num_to_visit(i),i)
+        num_visiting[i]++;
+        num_to_visit[i] = 0;
     }
 
 
-    void setWet(int i, int ix){
+    void SetWet(int i, int ix){
         nodes[ix].wet_tag.b_Wet(i) = true;    
         n_wet[i]++;
     }
@@ -53,20 +53,20 @@ class SearchMol{
         if(nodes[ix].wet_tag.b_wet(i)){
             return   // already included
         }
-        n_ToVisit[i]++;
-        list_ToVisit(n_ToVisit(i),i) = ix
+        num_to_visit[i]++;
+        list_to_visit(num_to_visit(i),i) = ix
     }
 
     void setOnSurf(int i,int ix){
-        n_OnSurf[i]++;
-        list_OnSurf(n_OnSurf(i),i) = ix
+        num_on_surface[i]++;
+        list_on_surface(num_on_surface(i),i) = ix
     }
 
     void initNewLevel(int i){ // i = 1 or 2
-        list_Visitin (1:n_OnSurf[i],i) = list_OnSurf (1:n_OnSurf[i],i)
-        n_Visitin[i] = n_OnSurf[i];
+        list_visiting (1:num_on_surface[i],i) = list_on_surface (1:num_on_surface[i],i)
+        num_visiting[i] = num_on_surface[i];
         n_Onsurf[i]  = 0;
-        n_ToVisit[i] = 0;
+        num_to_visit[i] = 0;
     }
     
     
@@ -74,7 +74,7 @@ class SearchMol{
         return nodes[ix].wet_tag.b_dam;
     }
 
-    bool function isWet(int i, int ix){
+    bool function IsWet(int i, int ix){
         return nodes[ix].wet_tag.b_Wet(i);
     }
 

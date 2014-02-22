@@ -1,36 +1,35 @@
-#include "grid.h" //, only: num_nodes, n_lrzcs, Nodes, GetIlrzcsFromIx, GetShapeFromIx
-#include "vector.h" //, only: num_dir
-#include "DS_Mol.h" //, only: getAllNeigh
-#include "common.h" // only: OUT, E_cut, n_Minima_MAX, n_minima, ix_Minima, NodeType, E_surf0, dE, b_Multi_Modal
-#include "search_mol.h" //, only: initAlgorithm, raiseWater, printIfWet, initWater,    setWet, &
-                    // addToVisit, setOnSurf, initNewLevel, isDam,    isWet, useToVisit, setStartin, &
-                    // List_OnSurf , list_ToVisit , list_Visitin , n_ToVisit ,n_Visitin, n_Wet
-#include "mod_dam.h"  // , only: n_dam, AddDamNode
+#include "grid.h"      //num_nodes, n_lrzcs, Nodes, GetIlrzcsFromIx, GetShapeFromIx
+#include "vector.h"    //num_dir
+#include "DS_Mol.h"    //getAllNeigh
+#include "common.h"    //OUT, E_cut, n_Minima_MAX, n_minima, ix_Minima, NodeType, E_surf0, dE, b_Multi_Modal
+#include "search_mol.h"// initAlgorithm, raiseWater, printIfWet, initWater,    setWet, &
+                       // addToVisit, setOnSurf, initNewLevel, isDam,    isWet, useToVisit, setStartin, &
+                       // List_OnSurf , list_ToVisit , list_Visitin , n_ToVisit ,n_Visitin, n_Wet
+#include "mod_dam.h"   //n_dam, AddDamNode
 
 void Search2(){
 
 //!!! delete for non-multi-modal case =====>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 //! - index -
-    int ix, ix1, ix2, ix_min    //!,ix_debug        ! 
-                       //  ! depth, length
-    bool b_minimum  //  !    ,b_debug,b_debug2                    
-    int Ilrzcs(5),Il //   !,Ilrzcs_debug(5),Ilrzcs_debug2(5)
-    float E_surf
+    int ix, ix1, ix2, ix_min;
+    bool b_minimum;
+    int Ilrzcs[5],Il;
+    float E_surf;
 
-    int i,j,k,n,i_min, i_min2 //
-    int ix_Nbs(num_dir),n_NBs;       // ! n: number of neighbors
+    int i,j,k,n,i_min, i_min2;
+    int ix_Nbs[num_dir],n_NBs;  //  n: number of neighbors
     int n_Wet_NBs;
 
 //! ¨€¨€#####------------------- 1 minimua -----------------------#####¨€¨€
 
     allocate( ix_Minima(n_Minima_MAX) );
-    i_min = 0
+    i_min = 0;
     for(Ix = 0; ix < num_nodes) {       // ! Energy <= Ecut
         IdentifyMin(Ix,b_minimum);
         if(b_minimum) {
             i_min++;                    //    ! number of minina
-            ix_Minima(i_min) = Ix    
+            ix_Minima(i_min) = ix;    
         }
     }
     n_Minima = i_min;
@@ -40,21 +39,19 @@ void Search2(){
     cout << "number of minimums = " << n_Minima << endl;
     cout << "NO.      E          Ilrzcs          cm12 \n";
     for(i_min = 0; i<n_minima; i++){
-        ix   = ix_Minima(i_min)
-        write(* ,"(i3,f10.3,2X,5i3,f10.3)")i_min,nodes(ix).E, GetIlrzcsFromIx(Ix), Nodes(ix).cm12
-        write(50,"(i3,f10.3,2X,5i3,f10.3)")i_min,nodes(ix).E, GetIlrzcsFromIx(Ix), Nodes(ix).cm12
+        ix = ix_Minima(i_min);
+        write(* ,"(i3,f10.3,2X,5i3,f10.3)")i_min,nodes(ix).E, GetIlrzcsFromIx(Ix), Nodes(ix).cm12;
+        write(50,"(i3,f10.3,2X,5i3,f10.3)")i_min,nodes(ix).E, GetIlrzcsFromIx(Ix), Nodes(ix).cm12;
     }
 
-//! ¨€¨€####---------------------- initialize  -----------------########¨€¨€
 
     initAlgorithm();
 
-//! - starting point -
     cout << "Select the entry & the exit: "
     cin >> i_min >> i_min2;
 
-    setStartin(1,ix_Minima(i_min));
-    setStartin(2,ix_Minima(i_min2));
+    SetStartin(1,ix_Minima(i_min));
+    SetStartin(2,ix_Minima(i_min2));
 
 //! - initial state -
     bool b_pools_connected = false;
@@ -68,18 +65,20 @@ void Search2(){
 L1: while (true) {                               // ! over water levels
         iloop++;
 L11:    for (i = 0; i<2; i++){                   // ! over two water pools
-            initNewLevel(i)
+            InitNewLevel(i);
 
 L21:        for(;;) {                           //     ! visit all nodes between level L and L+1
-L21i:           for( j = 0; j<n_Visitin[i]; j++){ 
+L21i:           for( j = 0; j < num_visiting[i]; j++){ 
                     ix = list_Visitin[j],[i];
                     GetAllNeigh(ix,n_NBs,ix_NBs);
-                    n_Wet_NBs = 0;
-//                ! -
-Lk:                 for (k = 0; k<n_NBs; k++){        //! loop over all neighbors of node ix
-                        ix1 = ix_NBs(k)
+                    n_wet_NBs = 0;
 
-                        if( nodes(ix1).E>E_Surf ) continue;
+Lk:                 for (k = 0; k<n_NBs; k++){        //! loop over all neighbors of node ix
+                        ix1 = ix_NBs(k);
+
+                        if( nodes(ix1).E > E_Surf ){
+                            continue;
+                        }
                         n_Wet_NBs++:
 
                         if (isDam(ix1)) {
@@ -100,7 +99,6 @@ Lk:                 for (k = 0; k<n_NBs; k++){        //! loop over all neighbor
                     }
 
                     if(n_Wet_NBs<n_NBs && !isDam(ix)) setOnSurf(i,ix);
-
                 }
 
                 if(n_ToVisit(i)==0) {
@@ -110,10 +108,10 @@ Lk:                 for (k = 0; k<n_NBs; k++){        //! loop over all neighbor
             }
         }
 
-//! __________________ check if the barrier have been found ______________
+        // check if the barrier have been found
 
-        printIfWet();                             //     ! - writeout -
-//    ! - 
+        printIfWet();
+
         if(b_pools_connected) {
             if(iloop <= 1) {
                 stop "Error: Barrier<E_surf0. Please decrease E_surf0";
@@ -123,9 +121,8 @@ Lk:                 for (k = 0; k<n_NBs; k++){        //! loop over all neighbor
             break L1;
         }
                                                                             //! write(*,*)"n_OnSurf2 = ",n_OnSurf2
-        raiseWater(E_surf);                                            write(*,"(a,f10.3)") "E_surf ",E_surf
-
-//! ______________________________________________________________________
+        raiseWater(E_surf);   
+        write(*,"(a,f10.3)") "E_surf ",E_surf;
 
     }//enddo L1
 
@@ -147,11 +144,9 @@ Lk:                 for (k = 0; k<n_NBs; k++){        //! loop over all neighbor
         }
         cout << "press any key to continue with searchMM" << endl;
         read*;
-//!        call SearchMM(E_surf)
     }
-//!!! =====================================<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    stop "Search2: ********88 ?>??"
 
+    stop "Search2: ********88 ?>??"
 }
 
 
