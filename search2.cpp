@@ -3,30 +3,29 @@
 #include "grid.h"      //num_nodes, n_lrzcs, Nodes, GetIlrzcsFromIx, GetShapeFromIx
 #include "vector.h"    //num_dir
 #include "DS_Mol.h"    //getAllNeigh
-#include "common.h"    //OUT, E_cut, n_Minima_MAX, n_minima, ix_Minima, NodeType, E_surf0, dE, b_Multi_Modal
+#include "common.h"    //OUT, E_cut, n_Minima_MAX, n_minima, ix_Minima, NodeType, E_surf0, dE
 #include "search_mol.h"// initAlgorithm, raiseWater, printIfWet, initWater,    setWet, &
                        // addToVisit, setOnSurf, initNewLevel, isDam,    isWet, useToVisit, setStartin, &
                        // List_OnSurf , list_ToVisit , list_Visitin , n_ToVisit ,n_Visitin, n_Wet
 #include "mod_dam.h"   //n_dam, AddDamNode
 
-void Search2(){
+void Searchrx2(){
 
     int ix, ix1, ix2, ix_min; //index
-    bool b_minimum;
     int Ilrzcs[5],Il;
     float E_surf;
 
-    int i,j,k,n,i_min, i_min2;
+    int i,k,n,i_min, i_min2;
     int ix_Nbs[num_dir],n_NBs;  //  n: number of neighbors
     int n_Wet_NBs;
 
+    AlgorithmMoller algthrithm
 //------------------- 1 minimua ----------------------
 
     allocate( ix_Minima(n_Minima_MAX) );
     i_min = 0;
     for(ix = 0; ix < num_nodes; ix++) {       // ! Energy <= Ecut
-        IdentifyMin(ix,b_minimum);
-        if(b_minimum) {
+        if(IdentifyMin(ix)) {
             i_min++;                    //    ! number of minina
             ix_Minima(i_min) = ix;    
         }
@@ -37,7 +36,7 @@ void Search2(){
 
     cout << "number of minimums = " << n_Minima << endl;
     cout << "NO.      E          Ilrzcs          cm12 \n";
-    for(i_min = 0; i<n_minima; i++){
+    for(i_min = 0; i < n_minima; i++){
         ix = ix_Minima(i_min);
         cout << setw(3)  << i_min 
              << setw(10) << setprecision(3) << fixed << nodes(ix).E 
@@ -71,7 +70,7 @@ L11:    for (i = 0; i<2; i++){                   // ! over two water pools
             InitNewLevel(i);
 
 L21:        for(;;) {                           // visit all nodes between level L and L+1
-L21i:           for( j = 0; j < num_visiting[i]; j++){ 
+L21i:           for(int j = 0; j < num_visiting[i]; j++){ 
                     ix = list_Visitin[j],[i];
                     GetAllNeigh(ix,n_NBs,ix_NBs);
                     n_wet_NBs = 0;
@@ -102,7 +101,9 @@ Lk:                 for (k = 0; k<n_NBs; k++){
                         }
                     }
 
-                    if(n_Wet_NBs<n_NBs && !isDam(ix)) setOnSurf(i,ix);
+                    if(n_Wet_NBs<n_NBs && !isDam(ix)){
+                        setOnSurf(i,ix);
+                    }
                 }
 
                 if(num_to_visit[i]==0) {

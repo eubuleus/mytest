@@ -3,11 +3,11 @@
 
 class Dam{
 
-    int n_dam = 0;        // !, n_dam_new = 0
-    int list_dam(4000);   // !, list_dam_new(100)
+    int n_dam = 0;        // n_dam_new = 0
+    int list_dam(4000);   // list_dam_new(100)
 
     void AddDamNode(int ix){
-        Nodes(ix).wet_tag.b_dam = true;
+        nodes[ix].wet_tag.b_dam = true;
         n_dam++;
         list_dam(n_dam) = ix;
     }

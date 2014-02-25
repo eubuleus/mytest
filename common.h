@@ -9,9 +9,8 @@ const int n_Minima_MAX = 100;
 const int max_len = R_G;
 const int E_infinit = 1.e4;             //
 float E_cut = 3.;
-bool b_E_Ground = false;        //! .true. if E_Ground is used.
+bool b_E_Ground = false;        //.true. if E_Ground is used.
 int len = 5;
-bool b_Multi_Modal = false;
 const int DIM[] = {2,2,2,2,2};
 
 
