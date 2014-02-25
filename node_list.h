@@ -1,3 +1,5 @@
+#include "node.h"
+
 class NodeList{
     int capacity;
     int size;

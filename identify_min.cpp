@@ -4,14 +4,14 @@
 #include "Common"   //, only: GridType,max_len
 #include "DS_Mol"   //, only: GetNeighValue
 
-bool IdentifyMin(int ix) {
+bool IdentifyMin(Node* p_node) {
 
     Grid *p;
     float E0, E;
     int vec[5],vd,ind[5],[2],ind1[5],[2];
 
-    ind= nodes[ix].Ind;
-    E0 = nodes[ix].E;
+    ind= p_node->ind;
+    E0 = p_node->E;
     for (int i = 0; i < num_dir_len[max_len]; i++){
 
         vec(:) = Dir(:,i);

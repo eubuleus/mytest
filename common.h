@@ -13,6 +13,7 @@ bool b_E_Ground = false;        //.true. if E_Ground is used.
 int len = 5;
 const int DIM[] = {2,2,2,2,2};
 
+int num_nodes = 0;
 
 std::vector<int> ix_Minima;
 
@@ -34,7 +35,3 @@ class GridType{
     
 };
 
-class WetTagType{
-    bool b_Wet[2]; // = false;
-    bool b_dam;  //    = false;
-};

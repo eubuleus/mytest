@@ -8,19 +8,22 @@
                        // addToVisit, setOnSurf, initNewLevel, isDam,    isWet, useToVisit, setStartin, &
                        // List_OnSurf , list_ToVisit , list_Visitin , n_ToVisit ,n_Visitin, n_Wet
 #include "mod_dam.h"   //n_dam, AddDamNode
+#include "pool.h"
+
 class AlgorithmMoller{
     int list_on_surface [][],list_to_visit[][],list_visiting[][];
     int num_wet[2], num_on_surface[2] , num_to_visit[2] , num_visiting[2];
+    Pool pools[] = new Pool[2];
 
     void Init(){
 
         list_on_surface = new int[num_nodes][2];
         list_to_visit = new int[num_nodes][2];
         list_visiting = new int[num_nodes][2];
-        num_on_surface(:) = 0;
-        num_to_visit(:)= 0;
-        num_visiting(:)= 0;
-        num_wet(:) = 0
+        num_on_surface[] = 0;
+        num_to_visit[]= 0;
+        num_visiting[]= 0;
+        num_wet[] = 0
     }
 
     void SetStarting(int i, int ix){
@@ -31,16 +34,9 @@ class AlgorithmMoller{
     float InitWater(int ix1, int ix2){
         float e = max(nodes[ix1].E, nodes[ix2].E, E_surf0);
         if(e>E_cut) {
-            stop 'Error: max(nodes[ix1].E, nodes[ix2].E, E_surf0)> E_cut';
+            stop "Error: max(nodes[ix1].E, nodes[ix2].E, E_surf0)> E_cut";
         }
         return e;
-    }
-
-    void RaiseWater(float& E_surf)
-        E_surf += dE
-        if(E_surf>E_cut){
-            stop 'Error: Barrier>Ecut. Please increase E_cut'
-        }
     }
 
     void UseToVisit(int i){              //  i = 1 or 2
@@ -50,38 +46,17 @@ class AlgorithmMoller{
     }
 
 
-    void SetWet(int i, int ix){
-        nodes[ix].wet_tag.b_Wet(i) = true;    
+    void SetWet(int i, Node* p_node){
+        p_node->is_wet(i) = true;    
         n_wet[i]++;
     }
 
-    void AddToVisit(int i, int ix){
-        if(nodes[ix].wet_tag.b_wet(i)){
-            return   // already included
-        }
-        num_to_visit[i]++;
-        list_to_visit(num_to_visit(i),i) = ix
+    bool function IsDam(Node* p_node){
+        return p_node->b_dam;
     }
 
-    void SetOnSurface(int i,int ix){
-        num_on_surface[i]++;
-        list_on_surface(num_on_surface(i),i) = ix
-    }
-
-    void initNewLevel(int i){ // i = 1 or 2
-        list_visiting (1:num_on_surface[i],i) = list_on_surface (1:num_on_surface[i],i)
-        num_visiting[i] = num_on_surface[i];
-        n_Onsurf[i]  = 0;
-        num_to_visit[i] = 0;
-    }
-    
-    
-    bool function isDam(int ix){
-        return nodes[ix].wet_tag.b_dam;
-    }
-
-    bool function IsWet(int i, int ix){
-        return nodes[ix].wet_tag.b_Wet(i);
+    bool function IsWet(int i, Node* p_node){
+        return p_node->is_wet(i);
     }
 
 
@@ -92,7 +67,7 @@ class AlgorithmMoller{
             cout << "Pool" << setw(4) << i << ":";
             for (i_min = 1; i<n_minima; i++){
                 ix = ix_Minima(i_min)
-                if( nodes[ix].wet_tag.b_Wet(i)) {
+                if( nodes[ix].is_wet(i)) {
                     cout << setw(4)  << i_min;
                 }
             }	
@@ -116,10 +91,10 @@ class AlgorithmMoller{
  
         allocate( ix_Minima(n_Minima_MAX) );
         i_min = 0;
-        for(ix = 0; ix < num_nodes; ix++) {       // ! Energy <= Ecut
-            if(IdentifyMin(ix)) {
+        for(Node* p_node = nodes; p_node != NULL; p_node++) {       // ! Energy <= Ecut
+            if(IdentifyMin(p_node)) {
                 i_min++;                    //    ! number of minina
-                ix_Minima(i_min) = ix;    
+                ix_Minima(i_min) = p_node;    
             }
         }
         n_Minima = i_min;
@@ -136,7 +111,6 @@ class AlgorithmMoller{
                  << setw(10) << setprecision(3) << fixed << nodes(ix).cm12 << endl;
             write(50,"(i3,f10.3,2X,5i3,f10.3)")i_min,nodes(ix).E, GetIlrzcsFromIx(Ix), Nodes(ix).cm12;
         }
- 
  
         initAlgorithm();
  
@@ -159,12 +133,13 @@ class AlgorithmMoller{
 L1:     while (true) {                               // over water levels
             iloop++;
 L11:        for (i = 0; i<2; i++){                   // over two water pools
-                InitNewLevel(i);
+                Pool pool = pools[i];
+                pool.InitNewLevel();
 
 L21:            for(;;) {                           // visit all nodes between level L and L+1
-L21i:               for(int j = 0; j < num_visiting[i]; j++){ 
-                        ix = list_Visitin[j],[i];
-                        GetAllNeigh(ix,n_NBs,ix_NBs);
+L21i:               for(Node* p_node_visiting = list_Visiting; p_node_visiting != NULL; p_node_visiting++){ //j
+                        Node* p = *p_node_visiting;
+                        GetAllNeigh(pnode, n_NBs, ix_NBs);
                         n_wet_NBs = 0;
            
                         // loop over all neighbors of node ix
@@ -186,14 +161,14 @@ Lk:                     for (k = 0; k<n_NBs; k++){
                                 exit Lk;
                             } else {
                                 if(!isWet(i,ix1)){
-                                    AddToVisit(i,ix1);
-                                    SetWet(i,ix1);
+                                    pool.AddToVisit(ix1);
+                                    pool.SetWet(i,ix1);
                                 }
                             }
                         }
  
-                        if(n_Wet_NBs<n_NBs && !isDam(ix)){
-                            setOnSurf(i,ix);
+                        if(n_Wet_NBs<n_NBs && !isDam(p_node)){
+                            pool.SetOnSurf(p_node);
                         }
                     }
  
